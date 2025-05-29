@@ -1,4 +1,4 @@
-# ☢️ azure-nuke
+# ☢️ az-nuke
 
 `azure-nuke` is a powerful and **irreversible** script that **completely wipes an Azure subscription** using the Azure CLI.
 
