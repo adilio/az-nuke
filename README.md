@@ -1,13 +1,3 @@
-Absolutely! Here's a **GitHub-ready `README.md`** version of the `azure-nuke` documentation. It includes:
-
-* ✅ Clean formatting for GitHub
-* 📌 Table of contents with anchor links
-* ☢️ Emoji and formatting for warnings and highlights
-* 🧪 Sample output reference section (for clarity)
-
----
-
-````markdown
 # ☢️ azure-nuke
 
 `azure-nuke` is a powerful and **irreversible** script that **completely wipes an Azure subscription** using the Azure CLI.
