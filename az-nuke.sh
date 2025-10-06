@@ -7,15 +7,163 @@
 
 # Initialize quiet mode as off
 QUIET_MODE=false
+TAG_MODE=false
+TAG_NAME=""
+TAG_VALUE=""
+TAG_DELETE=false
 
 # Parse flags
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    -q|--quiet) QUIET_MODE=true ;;
-    *) echo "❌ Unknown option: $1"; exit 1 ;;
+    -q|--quiet)
+      QUIET_MODE=true
+      shift
+      ;;
+    --tag)
+      if [[ $# -lt 3 ]]; then
+        echo "❌ --tag requires <tag-name> and <tag-value>"
+        exit 1
+      fi
+      TAG_MODE=true
+      TAG_NAME=$2
+      TAG_VALUE=$3
+      shift 3
+      ;;
+    --force)
+      TAG_DELETE=true
+      shift
+      ;;
+    *)
+      echo "❌ Unknown option: $1"
+      exit 1
+      ;;
   esac
-  shift
 done
+
+if [[ $TAG_DELETE == true && $TAG_MODE == false ]]; then
+  echo "❌ --force can only be used together with --tag"
+  exit 1
+fi
+
+run_tag_cleanup() {
+  local tag_name=$1
+  local tag_value=$2
+  local delete_mode=$3
+  local tag_filter="${tag_name}=${tag_value}"
+  local start_subscription
+  local subscriptions_found
+
+  if ! command -v az >/dev/null 2>&1; then
+    echo "❌ Azure CLI (az) is not available in PATH."
+    return 1
+  fi
+
+  if ! az account show >/dev/null 2>&1; then
+    echo "❌ You must run 'az login' before using --tag."
+    return 1
+  fi
+
+  start_subscription=$(az account show --query id -o tsv 2>/dev/null)
+
+  SUBSCRIPTIONS=()
+  while IFS= read -r sub; do
+    if [[ -n $sub ]]; then
+      SUBSCRIPTIONS[${#SUBSCRIPTIONS[@]}]="$sub"
+    fi
+  done < <(az account list --query "[?state=='Enabled'].id" -o tsv 2>/dev/null)
+
+  subscriptions_found=${#SUBSCRIPTIONS[@]}
+  if [[ $subscriptions_found -eq 0 ]]; then
+    echo "❌ No enabled subscriptions found for the logged-in account."
+    return 1
+  fi
+
+  echo "Searching for resources tagged with ${tag_filter}"
+  echo "----------------------------------------------------------------------"
+
+  ALL_RESOURCE_IDS=()
+
+  for subscription in "${SUBSCRIPTIONS[@]}"; do
+    local sub_name
+    local resources
+
+    sub_name=$(az account show --subscription "$subscription" --query name -o tsv 2>/dev/null)
+    if [[ -z $sub_name ]]; then
+      sub_name=$subscription
+    fi
+
+    echo "Subscription: ${sub_name} (${subscription})"
+
+    if ! az account set --subscription "$subscription" >/dev/null 2>&1; then
+      echo "  -> Unable to switch to subscription. Skipping."
+      continue
+    fi
+
+    resources=$(az resource list --tag "$tag_filter" --query "[].{id:id,name:name,type:type,rg:resourceGroup}" -o tsv 2>/dev/null)
+
+    if [[ -z $resources ]]; then
+      echo "  -> No matching resources."
+      continue
+    fi
+
+    while IFS=$'\t' read -r res_id res_name res_type res_rg; do
+      if [[ -z $res_id ]]; then
+        continue
+      fi
+      echo "  -> Found: ${res_name} (${res_type}) in resource group: ${res_rg}"
+      ALL_RESOURCE_IDS[${#ALL_RESOURCE_IDS[@]}]="$res_id"
+    done <<EOF
+$resources
+EOF
+  done
+
+  echo "----------------------------------------------------------------------"
+
+  local total_found
+  total_found=${#ALL_RESOURCE_IDS[@]}
+
+  if [[ $total_found -eq 0 ]]; then
+    echo "No resources matched ${tag_filter} across ${subscriptions_found} subscription(s)."
+    if [[ -n $start_subscription ]]; then
+      az account set --subscription "$start_subscription" >/dev/null 2>&1
+    fi
+    return 0
+  fi
+
+  echo "Found ${total_found} resource(s) with tag ${tag_filter}."
+
+  if [[ $delete_mode == true ]]; then
+    echo "Deletion mode is enabled."
+    read -p "Type 'yes' to delete all matching resources: " confirmation
+    if [[ $confirmation != "yes" ]]; then
+      echo "Deletion aborted by user."
+      if [[ -n $start_subscription ]]; then
+        az account set --subscription "$start_subscription" >/dev/null 2>&1
+      fi
+      return 0
+    fi
+
+    for resource_id in "${ALL_RESOURCE_IDS[@]}"; do
+      echo "Deleting resource: ${resource_id}"
+      if ! az resource delete --ids "$resource_id" >/dev/null 2>&1; then
+        echo "  -> Failed to delete ${resource_id}"
+      fi
+    done
+
+    echo "Delete commands have been issued for all matching resources."
+  else
+    echo "Re-run with --tag ${tag_name} ${tag_value} --force to delete the matching resources."
+  fi
+
+  if [[ -n $start_subscription ]]; then
+    az account set --subscription "$start_subscription" >/dev/null 2>&1
+  fi
+}
+
+if [[ $TAG_MODE == true ]]; then
+  run_tag_cleanup "$TAG_NAME" "$TAG_VALUE" "$TAG_DELETE"
+  exit $?
+fi
 
 #################################################################
 #                   AZURE SUBSCRIPTION CONFIG                   #

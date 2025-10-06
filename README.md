@@ -13,6 +13,7 @@ This tool is ideal for teardown scenarios, lab resets, CI cleanup tasks, or safe
 - [⚠️ WARNING](#️-warning)
 - [✅ What It Does](#-what-it-does)
 - [🚀 Usage](#-usage)
+- [🏷️ Delete By Tag](#-delete-by-tag)
 - [🔧 Prerequisites](#-prerequisites)
 - [🛑 Exclusions](#-exclusions)
 - [🧪 Post-Execution](#-post-execution)
@@ -63,7 +64,7 @@ The script performs the following steps in order:
 
 ```bash
 ./azure-nuke.sh
-````
+```
 
 You will be prompted to:
 
@@ -77,6 +78,22 @@ You will be prompted to:
 ```
 
 Use this only in CI/CD or automated pipelines **when you're absolutely sure**.
+
+## 🏷️ Delete By Tag
+
+Use the built-in tag mode to locate (and optionally delete) resources matching a specific tag across every enabled subscription the current Azure account can access.
+
+```bash
+./azure-nuke.sh --tag <tag-name> <tag-value>
+```
+
+Add `--force` to remove the matching resources after a confirmation prompt:
+
+```bash
+./azure-nuke.sh --tag <tag-name> <tag-value> --force
+```
+
+This mode exits after it completes and restores your original Azure subscription context. It requires the Azure CLI and an active `az login` session.
 
 ---
 
