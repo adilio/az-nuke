@@ -13,7 +13,7 @@ This tool is ideal for teardown scenarios, lab resets, CI cleanup tasks, or safe
 - [⚠️ WARNING](#️-warning)
 - [✅ What It Does](#-what-it-does)
 - [🚀 Usage](#-usage)
-- [🏷️ Delete By Tag](#-delete-by-tag)
+- [🏷️ Tag Mode](#-tag-mode)
 - [🔧 Prerequisites](#-prerequisites)
 - [🛑 Exclusions](#-exclusions)
 - [🧪 Post-Execution](#-post-execution)
@@ -79,7 +79,7 @@ You will be prompted to:
 
 Use this only in CI/CD or automated pipelines **when you're absolutely sure**.
 
-## 🏷️ Delete By Tag
+## 🏷️ Tag Mode
 
 Use the built-in tag mode to locate (and optionally delete) resources matching a specific tag across every enabled subscription the current Azure account can access.
 
