@@ -8,18 +8,18 @@ This tool is ideal for teardown scenarios, lab resets, CI cleanup tasks, or safe
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [⚠️ WARNING](#️-warning)
-- [✅ What It Does](#-what-it-does)
-- [🚀 Usage](#-usage)
-- [🏷️ Tag Mode](#-tag-mode)
-- [🧹 Removing Cortex Cloud Resources](#-removing-cortex-cloud-resources)
-- [🔧 Prerequisites](#-prerequisites)
-- [🛑 Exclusions](#-exclusions)
-- [🧪 Post-Execution](#-post-execution)
-- [💡 Future Improvements](#-future-improvements)
-- [👤 Author](#-author)
+- [WARNING](#️-warning)
+- [What It Does](#-what-it-does)
+- [Usage](#-usage)
+- [Tag Mode](#-tag-mode)
+- [Removing Cortex Cloud Resources](#-removing-cortex-cloud-resources)
+- [Prerequisites](#-prerequisites)
+- [Exclusions](#-exclusions)
+- [Post-Execution](#-post-execution)
+- [Future Improvements](#-future-improvements)
+- [Author](#-author)
 
 ---
 
@@ -39,7 +39,7 @@ This script **irreversibly deletes** everything in the specified Azure subscript
 
 ---
 
-## ✅ What It Does
+## What It Does
 
 The script performs the following steps in order:
 
@@ -59,7 +59,7 @@ The script performs the following steps in order:
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### 🔹 Standard Mode (with confirmation)
 
@@ -80,7 +80,7 @@ You will be prompted to:
 
 Use this only in CI/CD or automated pipelines **when you're absolutely sure**.
 
-## 🏷️ Tag Mode
+## Tag Mode
 
 Use the built-in tag mode to locate (and optionally delete) resources matching a specific tag across every enabled subscription the current Azure account can access.
 
@@ -98,7 +98,7 @@ This mode exits after it completes and restores your original Azure subscription
 
 ---
 
-## 🧹 Removing Cortex Cloud Resources
+## Removing Cortex Cloud Resources
 
 If you need to off-board from Cortex Cloud, one option is to remove the Azure resources tagged with `managed_by=paloaltonetworks`.
 
@@ -116,7 +116,7 @@ The command above lists every matching resource across your enabled subscription
 
 ---
 
-## 🔧 Prerequisites
+## Prerequisites
 
 To run `azure-nuke`, you must have:
 
@@ -133,7 +133,7 @@ To run `azure-nuke`, you must have:
 
 ---
 
-## 🛑 Exclusions
+## Exclusions
 
 This script **skips deletion** of **well-known Microsoft internal service principals**, using a hardcoded list of `appId`s.
 
@@ -143,7 +143,7 @@ You can customize the exclusions by modifying the array in the `az ad sp delete`
 
 ---
 
-## 🧪 Post-Execution
+## Post-Execution
 
 After everything runs, the script prints a **status report** showing which Azure objects remain, such as:
 
@@ -162,7 +162,7 @@ If all components are marked ✅ CLEAN, the subscription is safe to:
 
 ---
 
-## 💡 Future Improvements
+## Future Improvements
 
 Planned features:
 
@@ -173,7 +173,7 @@ Planned features:
 
 ---
 
-## 👤 Author
+## Author
 
 > `azure-nuke` was built by security automation pros tired of click-ops.
 >
