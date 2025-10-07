@@ -64,7 +64,7 @@ The script performs the following steps in order:
 ### 🔹 Standard Mode (with confirmation)
 
 ```bash
-./azure-nuke.sh
+git clone https://github.com/adilio/az-nuke.git && cd az-nuke && ./azure-nuke.sh
 ```
 
 You will be prompted to:
@@ -101,6 +101,10 @@ This mode exits after it completes and restores your original Azure subscription
 ## 🧹 Removing Cortex Cloud Resources
 
 If you need to off-board from Cortex Cloud, one option is to remove the Azure resources tagged with `managed_by=paloaltonetworks`.
+
+```bash
+git clone https://github.com/adilio/az-nuke.git && cd az-nuke
+```
 
 ```bash
 ./azure-nuke.sh --tag managed_by paloaltonetworks --force
