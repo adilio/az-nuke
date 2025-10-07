@@ -110,7 +110,9 @@ git clone https://github.com/adilio/az-nuke.git && cd az-nuke
 ./azure-nuke.sh --tag managed_by paloaltonetworks --force
 ```
 
-The command above lists every matching resource across your enabled subscriptions and (after confirmation) issues delete operations for the full set, covering items such as deployment templates. This is not an official Palo Alto Networks decommissioning procedure; if you have the original Terraform configuration, prefer running `terraform destroy` so the infrastructure is torn down using the same state that created it.
+The command above lists every matching resource across your enabled subscriptions and (after confirmation) issues delete operations for the full set, covering items such as deployment templates.
+
+> ⚠️ This is not an official Palo Alto Networks decommissioning procedure; if you have the original Terraform configuration, prefer running `terraform destroy` so the infrastructure is torn down using the same state that created it.
 
 ---
 
