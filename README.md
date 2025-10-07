@@ -14,6 +14,7 @@ This tool is ideal for teardown scenarios, lab resets, CI cleanup tasks, or safe
 - [✅ What It Does](#-what-it-does)
 - [🚀 Usage](#-usage)
 - [🏷️ Tag Mode](#-tag-mode)
+- [🧹 Removing Cortex Cloud Resources](#-removing-cortex-cloud-resources)
 - [🔧 Prerequisites](#-prerequisites)
 - [🛑 Exclusions](#-exclusions)
 - [🧪 Post-Execution](#-post-execution)
@@ -94,6 +95,18 @@ Add `--force` to remove the matching resources after a confirmation prompt:
 ```
 
 This mode exits after it completes and restores your original Azure subscription context. It requires the Azure CLI and an active `az login` session.
+
+---
+
+## 🧹 Removing Cortex Cloud Resources
+
+If you need to off-board from Cortex Cloud, one option is to remove the Azure resources tagged with `managed_by=paloaltonetworks`.
+
+```bash
+./azure-nuke.sh --tag managed_by paloaltonetworks --force
+```
+
+The command above lists every matching resource across your enabled subscriptions and (after confirmation) issues delete operations for the full set, covering items such as deployment templates. This is not an official Palo Alto Networks decommissioning procedure; if you have the original Terraform configuration, prefer running `terraform destroy` so the infrastructure is torn down using the same state that created it.
 
 ---
 
